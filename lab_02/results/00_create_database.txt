@@ -1,0 +1,15 @@
+Pager usage is off.
+You are now connected to database "postgres" as user "lab_check".
+CREATE DATABASE
+You are now connected to database "lab02_bank" as user "lab_check".
+BEGIN
+CREATE SCHEMA
+CREATE TABLE
+INSERT 0 2
+COMMIT
+ account_id | val 
+------------+-----
+          1 | 100
+          2 | 100
+(2 rows)
+

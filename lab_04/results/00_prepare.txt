@@ -1,0 +1,40 @@
+Pager usage is off.
+                                                        postgres_version                                                         
+---------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 18.6 (Ubuntu 18.6-0ubuntu0.26.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, 64-bit
+(1 row)
+
+           demo_version           
+----------------------------------
+ PostgresPro 2025-09-01 (91 days)
+(1 row)
+
+               name               | setting | unit 
+----------------------------------+---------+------
+ cursor_tuple_fraction            | 0.1     | 
+ hash_mem_multiplier              | 2       | 
+ maintenance_work_mem             | 65536   | kB
+ max_parallel_maintenance_workers | 2       | 
+ max_parallel_workers_per_gather  | 2       | 
+ random_page_cost                 | 4       | 
+ work_mem                         | 4096    | kB
+(7 rows)
+
+ANALYZE
+   table_name    | estimated_rows | table_size 
+-----------------+----------------+------------
+ boarding_passes |        2463832 | 160 MB
+ bookings        |        1292893 | 64 MB
+ flights         |          21758 | 1632 kB
+ seats           |           1741 | 80 kB
+ tickets         |        2973857 | 240 MB
+(5 rows)
+
+ tablename |                 indexname                  |                                                             indexdef                                                              
+-----------+--------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------
+ bookings  | bookings_pkey                              | CREATE UNIQUE INDEX bookings_pkey ON bookings.bookings USING btree (book_ref)
+ seats     | seats_pkey                                 | CREATE UNIQUE INDEX seats_pkey ON bookings.seats USING btree (airplane_code, seat_no)
+ tickets   | tickets_book_ref_passenger_id_outbound_key | CREATE UNIQUE INDEX tickets_book_ref_passenger_id_outbound_key ON bookings.tickets USING btree (book_ref, passenger_id, outbound)
+ tickets   | tickets_pkey                               | CREATE UNIQUE INDEX tickets_pkey ON bookings.tickets USING btree (ticket_no)
+(4 rows)
+

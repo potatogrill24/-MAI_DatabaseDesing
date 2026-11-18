@@ -1,0 +1,87 @@
+Pager usage is off.
+SET
+ aircraft_code |     model      | range 
+---------------+----------------+-------
+ E70           | Эмбраэр E170   |  4000
+ 76F           | Боинг 767-300F |  6000
+(2 rows)
+
+ aircraft_code | fare_conditions | seat_count 
+---------------+-----------------+------------
+ 32N           | Business        |         28
+ 32N           | Economy         |        138
+ 339           | Business        |         29
+ 339           | Economy         |        224
+ 351           | Business        |         44
+ 351           | Economy         |        281
+ 35X           | Business        |          0
+ 35X           | Economy         |          0
+ 76F           | Business        |          0
+ 76F           | Economy         |          0
+ 77W           | Business        |         30
+ 77W           | Economy         |        326
+ 789           | Business        |         48
+ 789           | Economy         |        188
+ 7M7           | Business        |         16
+ 7M7           | Economy         |        144
+ CR7           | Business        |          6
+ CR7           | Economy         |         52
+ E70           | Business        |          6
+ E70           | Economy         |         72
+(20 rows)
+
+ aircraft_code |         model          | route_count 
+---------------+------------------------+-------------
+ 32N           | Аэробус A320neo        |          38
+ 339           | Аэробус A330-900neo    |          70
+ 351           | Аэробус A350-1000      |          90
+ 35X           | Аэробус A350F          |           0
+ 76F           | Боинг 767-300F         |           0
+ 77W           | Боинг 777-300ER        |         144
+ 789           | Боинг 787-9 Dreamliner |         208
+ 7M7           | Боинг 737 MAX 7        |         162
+ CR7           | Бомбардье CRJ700       |         110
+ E70           | Эмбраэр E170           |         116
+(10 rows)
+
+ aircraft_code |         model          | route_count 
+---------------+------------------------+-------------
+ 32N           | Аэробус A320neo        |          38
+ 339           | Аэробус A330-900neo    |          70
+ 351           | Аэробус A350-1000      |          90
+ 77W           | Боинг 777-300ER        |         144
+ 789           | Боинг 787-9 Dreamliner |         208
+ 7M7           | Боинг 737 MAX 7        |         162
+ CR7           | Бомбардье CRJ700       |         110
+ E70           | Эмбраэр E170           |         116
+(8 rows)
+
+ unregistered_passengers | tickets_without_checkin | segments_without_checkin 
+-------------------------+-------------------------+--------------------------
+                  773080 |                 1032282 |                  1477417
+(1 row)
+
+ unregistered_passengers_on_departed_flights 
+---------------------------------------------
+                                           0
+(1 row)
+
+ airplane_models 
+-----------------
+              10
+(1 row)
+
+ range_interval_km | airplane_models 
+-------------------+-----------------
+ (0, 10000)        |               6
+ [10000, 20000)    |               4
+ [20000, 30000)    |               0
+ [30000, 40000)    |               0
+ [40000, 50000)    |               0
+ [50000, 60000)    |               0
+ [60000, 70000)    |               0
+ [70000, 80000)    |               0
+ [80000, 90000)    |               0
+ [90000, 100000)   |               0
+(10 rows)
+

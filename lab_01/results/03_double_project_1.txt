@@ -1,0 +1,22 @@
+Pager usage is off.
+BEGIN
+ project_1_quantity_before 
+---------------------------
+                      1000
+(1 row)
+
+ s_id | p_id | j_id | qty 
+------+------+------+-----
+ s1   | p1   | j1   | 400
+ s2   | p3   | j1   | 800
+ s3   | p3   | j1   | 400
+ s1   | p1   | j1   | 400
+(4 rows)
+
+UPDATE 4
+ project_1_quantity_after 
+--------------------------
+                     2000
+(1 row)
+
+COMMIT

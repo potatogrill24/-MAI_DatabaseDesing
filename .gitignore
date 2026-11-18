@@ -1,0 +1,8 @@
+.env
+.vscode/
+*.log881
+.sql
+.gz
+
+# SQL dumps
+*.sql.gz

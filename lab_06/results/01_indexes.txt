@@ -1,0 +1,28 @@
+Pager usage is off.
+Timing is on.
+                        function_signature                         | provolatile 
+-------------------------------------------------------------------+-------------
+ timestamptz_mi(timestamp with time zone,timestamp with time zone) | i
+ timestamptz_pl_interval(timestamp with time zone,interval)        | s
+(2 rows)
+
+Time: 0.997 ms
+CREATE INDEX
+Time: 273.189 ms
+CREATE INDEX
+Time: 2191.229 ms (00:02.191)
+ANALYZE
+Time: 694.967 ms
+          indexname          |                                                                  indexdef                                                                   
+-----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------
+ lab06_business_segments_idx | CREATE INDEX lab06_business_segments_idx ON bookings.segments USING btree (flight_id, ticket_no) WHERE (fare_conditions = 'Business'::text)
+ lab06_flight_delay_idx      | CREATE INDEX lab06_flight_delay_idx ON bookings.flights USING btree (((actual_departure - scheduled_departure))) INCLUDE (flight_id)
+(2 rows)
+
+Time: 4.300 ms
+ attname | null_frac  | n_distinct  | most_common_vals | most_common_freqs 
+---------+------------+-------------+------------------+-------------------
+ expr    | 0.49508226 | -0.50491774 |                  | 
+(1 row)
+
+Time: 0.968 ms

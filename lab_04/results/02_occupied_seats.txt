@@ -1,0 +1,115 @@
+Pager usage is off.
+Timing is on.
+2. Подробная выборка занятых мест для всех рейсов
+                                                        QUERY PLAN                                                        
+--------------------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=118681.14..225947.84 rows=2463832 width=49) (actual rows=2463832.00 loops=1)
+   Hash Cond: (bp.flight_id = f.flight_id)
+   Buffers: shared hit=875 read=50561, temp read=29514 written=29514
+   ->  Hash Join  (cost=117987.58..218785.47 rows=2463832 width=34) (actual rows=2463832.00 loops=1)
+         Hash Cond: (bp.ticket_no = t.ticket_no)
+         Buffers: shared hit=671 read=50561, temp read=29514 written=29514
+         ->  Seq Scan on boarding_passes bp  (cost=0.00..45126.32 rows=2463832 width=21) (actual rows=2463832.00 loops=1)
+               Buffers: shared hit=58 read=20430
+         ->  Hash  (cost=60483.37..60483.37 rows=2973937 width=27) (actual rows=2973937.00 loops=1)
+               Buckets: 131072  Batches: 32  Memory Usage: 6434kB
+               Buffers: shared hit=613 read=30131, temp written=16653
+               ->  Seq Scan on tickets t  (cost=0.00..60483.37 rows=2973937 width=27) (actual rows=2973937.00 loops=1)
+                     Buffers: shared hit=613 read=30131
+   ->  Hash  (cost=421.58..421.58 rows=21758 width=19) (actual rows=21758.00 loops=1)
+         Buckets: 32768  Batches: 1  Memory Usage: 1446kB
+         Buffers: shared hit=204
+         ->  Seq Scan on flights f  (cost=0.00..421.58 rows=21758 width=19) (actual rows=21758.00 loops=1)
+               Buffers: shared hit=204
+ Settings: search_path = 'bookings, "$user", public'
+ Planning:
+   Buffers: shared hit=500 read=21
+ Planning Time: 169.776 ms
+ JIT:
+   Functions: 18
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 1926.468 ms
+(26 rows)
+
+Time: 2097.054 ms (00:02.097)
+2. Первые десять строк результата для просмотра
+ flight_id | route_no |  scheduled_departure   | seat_no |   ticket_no   |  passenger_name   
+-----------+----------+------------------------+---------+---------------+-------------------
+       108 | PG0234   | 2025-10-01 17:45:00+03 | 39F     | 0005432000000 | Ilaria Cazzaniga
+       164 | PG0002   | 2025-10-02 02:35:00+03 | 23B     | 0005432000001 | Claudio Gonzalez
+       139 | PG0185   | 2025-10-01 19:35:00+03 | 43B     | 0005432000002 | Sunita Mal
+      1637 | PG0233   | 2025-10-10 04:30:00+03 | 22H     | 0005432000003 | Ilaria Cazzaniga
+        64 | PG0182   | 2025-10-01 13:10:00+03 | 27F     | 0005432000004 | Karl-Heinz Arndt
+        88 | PG0181   | 2025-10-01 15:50:00+03 | 20G     | 0005432000005 | Dietmar Franz
+       174 | PG0152   | 2025-10-02 03:50:00+03 | 45C     | 0005432000006 | Jamie Jackson
+       134 | PG0188   | 2025-10-01 21:40:00+03 | 28J     | 0005432000007 | Smita Chand
+        13 | PG0229   | 2025-10-01 05:25:00+03 | 26E     | 0005432000008 | Zhiming Hou
+       157 | PG0063   | 2025-10-02 01:30:00+03 | 40C     | 0005432000009 | Natalya Filippova
+(10 rows)
+
+Time: 0.797 ms
+2. Только количество строк того же соединения
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=121157.04..121157.05 rows=1 width=8) (actual rows=1.00 loops=1)
+   Buffers: shared hit=1482 read=50362, temp read=22294 written=22688
+   ->  Gather  (cost=121156.83..121157.04 rows=2 width=8) (actual rows=3.00 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=1482 read=50362, temp read=22294 written=22688
+         ->  Partial Aggregate  (cost=120156.83..120156.84 rows=1 width=8) (actual rows=1.00 loops=3)
+               Buffers: shared hit=1482 read=50362, temp read=22294 written=22688
+               ->  Parallel Hash Join  (cost=65369.21..117590.33 rows=1026597 width=0) (actual rows=821277.33 loops=3)
+                     Hash Cond: (bp.ticket_no = t.ticket_no)
+                     Buffers: shared hit=1482 read=50362, temp read=22294 written=22688
+                     ->  Hash Join  (cost=693.56..34142.86 rows=1026597 width=14) (actual rows=821277.33 loops=3)
+                           Hash Cond: (bp.flight_id = f.flight_id)
+                           Buffers: shared hit=774 read=20326
+                           ->  Parallel Seq Scan on boarding_passes bp  (cost=0.00..30753.97 rows=1026597 width=18) (actual rows=821277.33 loops=3)
+                                 Buffers: shared hit=162 read=20326
+                           ->  Hash  (cost=421.58..421.58 rows=21758 width=4) (actual rows=21758.00 loops=3)
+                                 Buckets: 32768  Batches: 1  Memory Usage: 1021kB
+                                 Buffers: shared hit=612
+                                 ->  Seq Scan on flights f  (cost=0.00..421.58 rows=21758 width=4) (actual rows=21758.00 loops=3)
+                                       Buffers: shared hit=612
+                     ->  Parallel Hash  (cost=43135.40..43135.40 rows=1239140 width=14) (actual rows=991312.33 loops=3)
+                           Buckets: 262144  Batches: 32  Memory Usage: 6464kB
+                           Buffers: shared hit=708 read=30036, temp written=12208
+                           ->  Parallel Seq Scan on tickets t  (cost=0.00..43135.40 rows=1239140 width=14) (actual rows=991312.33 loops=3)
+                                 Buffers: shared hit=708 read=30036
+ Settings: search_path = 'bookings, "$user", public'
+ Planning:
+   Buffers: shared hit=36
+ Planning Time: 0.324 ms
+ JIT:
+   Functions: 59
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 646.733 ms
+(34 rows)
+
+Time: 760.598 ms
+2. Дополнительно: количество мест без лишних соединений
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=34320.67..34320.68 rows=1 width=8) (actual rows=1.00 loops=1)
+   Buffers: shared hit=444 read=20044
+   ->  Gather  (cost=34320.46..34320.67 rows=2 width=8) (actual rows=3.00 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=444 read=20044
+         ->  Partial Aggregate  (cost=33320.46..33320.47 rows=1 width=8) (actual rows=1.00 loops=3)
+               Buffers: shared hit=444 read=20044
+               ->  Parallel Seq Scan on boarding_passes  (cost=0.00..30753.97 rows=1026597 width=0) (actual rows=821277.33 loops=3)
+                     Buffers: shared hit=444 read=20044
+ Settings: search_path = 'bookings, "$user", public'
+ Planning Time: 0.053 ms
+ Execution Time: 52.105 ms
+(13 rows)
+
+Time: 52.387 ms
+ occupied_seats 
+----------------
+        2463832
+(1 row)
+
+Time: 42.931 ms

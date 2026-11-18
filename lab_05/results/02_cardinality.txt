@@ -1,0 +1,12 @@
+Pager usage is off.
+  passenger_name  | table_rows | distinct_names | in_mcv | mcv_count | mcv_frequency_sum |      selectivity      | estimated_rows 
+------------------+------------+----------------+--------+-----------+-------------------+-----------------------+----------------
+ ALEKSANDR IVANOV |    2973949 |         149303 | f      |        76 |       0.020033324 | 6.566952869538823e-06 |             20
+ ANNA VASILEVA    |    2973949 |         149303 | f      |        76 |       0.020033324 | 6.566952869538823e-06 |             20
+(2 rows)
+
+   conname    |  constraint_definition  
+--------------+-------------------------
+ tickets_pkey | PRIMARY KEY (ticket_no)
+(1 row)
+

@@ -1,0 +1,52 @@
+Pager usage is off.
+Timing is on.
+3. Максимальная сумма: план до создания индекса
+                                                         QUERY PLAN                                                         
+----------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=15974.03..15974.04 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=350 read=7890
+   ->  Gather  (cost=15973.82..15974.03 rows=2 width=32) (actual rows=3.00 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=350 read=7890
+         ->  Partial Aggregate  (cost=14973.82..14973.83 rows=1 width=32) (actual rows=1.00 loops=3)
+               Buffers: shared hit=350 read=7890
+               ->  Parallel Seq Scan on bookings  (cost=0.00..13627.05 rows=538705 width=6) (actual rows=430964.33 loops=3)
+                     Buffers: shared hit=350 read=7890
+ Settings: search_path = 'bookings, "$user", public'
+ Planning:
+   Buffers: shared hit=85 read=1
+ Planning Time: 21.798 ms
+ Execution Time: 75.992 ms
+(15 rows)
+
+Time: 602.737 ms
+3. Создание индекса по сумме бронирования
+CREATE INDEX
+Time: 2060.845 ms (00:02.061)
+3. Максимальная сумма: план после создания индекса
+                                                                           QUERY PLAN                                                                            
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Result  (cost=0.45..0.46 rows=1 width=32) (actual rows=1.00 loops=1)
+   Buffers: shared hit=1 read=3
+   InitPlan 1
+     ->  Limit  (cost=0.43..0.45 rows=1 width=6) (actual rows=1.00 loops=1)
+           Buffers: shared hit=1 read=3
+           ->  Index Only Scan Backward using lab04_bookings_total_amount_idx on bookings  (cost=0.43..33625.82 rows=1292893 width=6) (actual rows=1.00 loops=1)
+                 Heap Fetches: 0
+                 Index Searches: 1
+                 Buffers: shared hit=1 read=3
+ Settings: search_path = 'bookings, "$user", public'
+ Planning:
+   Buffers: shared hit=19 read=1
+ Planning Time: 0.464 ms
+ Execution Time: 0.104 ms
+(14 rows)
+
+Time: 1.334 ms
+ max_total_amount 
+------------------
+        915250.00
+(1 row)
+
+Time: 0.341 ms

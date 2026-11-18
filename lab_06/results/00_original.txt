@@ -1,0 +1,96 @@
+Pager usage is off.
+Timing is on.
+                                                        postgres_version                                                         
+---------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 18.6 (Ubuntu 18.6-0ubuntu0.26.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, 64-bit
+(1 row)
+
+Time: 0.317 ms
+           demo_version           
+----------------------------------
+ PostgresPro 2025-09-01 (91 days)
+(1 row)
+
+Time: 0.171 ms
+  column_name   | data_type 
+----------------+-----------
+ ticket_no      | text
+ book_ref       | character
+ passenger_id   | text
+ passenger_name | text
+ outbound       | boolean
+(5 rows)
+
+Time: 3.785 ms
+              name               | setting | unit 
+---------------------------------+---------+------
+ max_parallel_workers_per_gather | 2       | 
+ random_page_cost                | 4       | 
+ work_mem                        | 4096    | kB
+(3 rows)
+
+Time: 0.755 ms
+ANALYZE
+Time: 716.275 ms
+ tablename |                 indexname                  |                                                             indexdef                                                              
+-----------+--------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------
+ flights   | flights_pkey                               | CREATE UNIQUE INDEX flights_pkey ON bookings.flights USING btree (flight_id)
+ flights   | flights_route_no_scheduled_departure_key   | CREATE UNIQUE INDEX flights_route_no_scheduled_departure_key ON bookings.flights USING btree (route_no, scheduled_departure)
+ segments  | segments_flight_id_idx                     | CREATE INDEX segments_flight_id_idx ON bookings.segments USING btree (flight_id)
+ segments  | segments_pkey                              | CREATE UNIQUE INDEX segments_pkey ON bookings.segments USING btree (ticket_no, flight_id)
+ tickets   | tickets_book_ref_passenger_id_outbound_key | CREATE UNIQUE INDEX tickets_book_ref_passenger_id_outbound_key ON bookings.tickets USING btree (book_ref, passenger_id, outbound)
+ tickets   | tickets_pkey                               | CREATE UNIQUE INDEX tickets_pkey ON bookings.tickets USING btree (ticket_no)
+(6 rows)
+
+Time: 2.166 ms
+ flights | delayed_over_five_hours 
+---------+-------------------------
+   21758 |                       0
+(1 row)
+
+Time: 2.917 ms
+ segments | business_segments 
+----------+-------------------
+  3941249 |            417644
+(1 row)
+
+Time: 97.821 ms
+Исходный запрос: ticket_flights заменено на segments согласно дампу
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Gather  (cost=56242.21..118037.02 rows=137734 width=52) (actual rows=0.00 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=225 read=1
+   ->  Parallel Hash Join  (cost=55242.21..103263.62 rows=57389 width=52) (actual rows=0.00 loops=3)
+         Hash Cond: (t.ticket_no = tf.ticket_no)
+         Buffers: shared hit=225 read=1
+         ->  Parallel Seq Scan on tickets t  (cost=0.00..43135.48 rows=1239148 width=52) (never executed)
+         ->  Parallel Hash  (cost=54524.85..54524.85 rows=57389 width=14) (actual rows=0.00 loops=3)
+               Buckets: 262144  Batches: 1  Memory Usage: 0kB
+               Buffers: shared hit=225 read=1
+               ->  Hash Join  (cost=641.03..54524.85 rows=57389 width=14) (actual rows=0.00 loops=1)
+                     Hash Cond: (tf.flight_id = f.flight_id)
+                     Buffers: shared hit=225 read=1
+                     ->  Parallel Seq Scan on segments tf  (cost=0.00..53431.81 rows=172160 width=18) (actual rows=1.00 loops=1)
+                           Filter: (fare_conditions = 'Business'::text)
+                           Rows Removed by Filter: 30
+                           Buffers: shared hit=1 read=1
+                     ->  Hash  (cost=550.37..550.37 rows=7253 width=4) (actual rows=0.00 loops=1)
+                           Buckets: 8192  Batches: 1  Memory Usage: 64kB
+                           Buffers: shared hit=224
+                           ->  Seq Scan on flights f  (cost=0.00..550.37 rows=7253 width=4) (actual rows=0.00 loops=1)
+                                 Filter: (actual_departure > (scheduled_departure + '05:00:00'::interval))
+                                 Rows Removed by Filter: 21758
+                                 Buffers: shared hit=224
+ Settings: search_path = 'bookings, "$user", public'
+ Planning:
+   Buffers: shared hit=97 read=23
+ Planning Time: 0.553 ms
+ JIT:
+   Functions: 66
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+ Execution Time: 24.854 ms
+(33 rows)
+
+Time: 25.810 ms

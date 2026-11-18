@@ -1,0 +1,36 @@
+Pager usage is off.
+BEGIN
+ transaction_isolation 
+-----------------------
+ read committed
+(1 row)
+
+DO
+SELECT 1
+DO
+ outbound_id | inbound_id |   outbound_departure   |   inbound_departure    
+-------------+------------+------------------------+------------------------
+       11515 |      12138 | 2025-12-03 17:15:00+03 | 2025-12-07 06:05:00+03
+(1 row)
+
+INSERT 0 1
+ book_ref |       book_date        | total_amount 
+----------+------------------------+--------------
+ ABC123   | 2025-12-01 03:00:00+03 |         0.00
+(1 row)
+
+INSERT 0 2
+INSERT 0 2
+ book_ref | total_amount 
+----------+--------------
+ ABC123   |     21000.00
+(1 row)
+
+INSERT 0 2
+ book_ref | total_amount | ticket_count | segment_count | calculated_total 
+----------+--------------+--------------+---------------+------------------
+ ABC123   |     42000.00 |            2 |             4 |         42000.00
+(1 row)
+
+DO
+COMMIT

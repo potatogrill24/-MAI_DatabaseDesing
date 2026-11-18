@@ -1,0 +1,32 @@
+Pager usage is off.
+You are now connected to database "demo" as user "lab_check".
+                                                        postgres_version                                                         
+---------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 18.6 (Ubuntu 18.6-0ubuntu0.26.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, 64-bit
+(1 row)
+
+           demo_version           
+----------------------------------
+ PostgresPro 2025-09-01 (91 days)
+(1 row)
+
+                 List of tables
+  Schema  |      Name       | Type  |   Owner   
+----------+-----------------+-------+-----------
+ bookings | airplanes_data  | table | lab_check
+ bookings | airports_data   | table | lab_check
+ bookings | boarding_passes | table | lab_check
+ bookings | bookings        | table | lab_check
+ bookings | flights         | table | lab_check
+ bookings | routes          | table | lab_check
+ bookings | seats           | table | lab_check
+ bookings | segments        | table | lab_check
+ bookings | tickets         | table | lab_check
+(9 rows)
+
+You are now connected to database "simple" as user "lab_check".
+ suppliers | parts | projects | supplies 
+-----------+-------+----------+----------
+         5 |     6 |        7 |       25
+(1 row)
+

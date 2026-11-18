@@ -1,0 +1,73 @@
+Pager usage is off.
+Timing is on.
+BEGIN
+Time: 0.081 ms
+Time: 0.892 ms
+SET
+Time: 0.084 ms
+SET
+Time: 0.035 ms
+1. Построение составного индекса по имени и идентификатору пассажира
+ maintenance_work_mem 
+----------------------
+ 64MB
+(1 row)
+
+Time: 0.040 ms
+psql:/home/stepan/code/MAI_DatabaseDesing/lab_04/01_index_and_cursor.sql:26: LOG:  temporary file: path "base/pgsql_tmp/pgsql_tmp361287.0.fileset/1.0", size 67592192
+psql:/home/stepan/code/MAI_DatabaseDesing/lab_04/01_index_and_cursor.sql:26: LOG:  temporary file: path "base/pgsql_tmp/pgsql_tmp361287.0.fileset/0.0", size 68354048
+CREATE INDEX
+Time: 16580.150 ms (00:16.580)
+COMMIT
+Time: 254.806 ms
+BEGIN
+Time: 0.317 ms
+1. Исходный план запроса в виде курсора
+ cursor_tuple_fraction 
+-----------------------
+ 0.1
+(1 row)
+
+Time: 0.272 ms
+                                 QUERY PLAN                                  
+-----------------------------------------------------------------------------
+ Index Scan using seats_pkey on seats  (cost=0.28..79.20 rows=1741 width=15)
+ Settings: search_path = 'bookings, "$user", public'
+(2 rows)
+
+Time: 3.167 ms
+1. Уменьшаем текущую долю в десять раз
+ set_config 
+------------
+ 0.01
+(1 row)
+
+Time: 295.518 ms
+                                     QUERY PLAN                                      
+-------------------------------------------------------------------------------------
+ Index Scan using seats_pkey on seats  (cost=0.28..79.20 rows=1741 width=15)
+ Settings: search_path = 'bookings, "$user", public', cursor_tuple_fraction = '0.01'
+(2 rows)
+
+Time: 0.530 ms
+DECLARE CURSOR
+Time: 0.333 ms
+ airplane_code | seat_no | fare_conditions 
+---------------+---------+-----------------
+ 32N           | 10A     | Economy
+ 32N           | 10B     | Economy
+ 32N           | 10C     | Economy
+ 32N           | 10D     | Economy
+ 32N           | 10E     | Economy
+ 32N           | 10F     | Economy
+ 32N           | 11A     | Economy
+ 32N           | 11B     | Economy
+ 32N           | 11C     | Economy
+ 32N           | 11D     | Economy
+(10 rows)
+
+Time: 0.306 ms
+CLOSE CURSOR
+Time: 0.298 ms
+COMMIT
+Time: 0.223 ms

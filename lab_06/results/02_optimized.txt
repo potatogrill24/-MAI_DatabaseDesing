@@ -1,0 +1,34 @@
+Pager usage is off.
+Timing is on.
+Оптимизированный запрос: план выполнения
+                                                            QUERY PLAN                                                             
+-----------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.14..93.03 rows=19 width=52) (actual rows=0.00 loops=1)
+   Buffers: shared hit=2
+   ->  Nested Loop  (cost=0.71..76.80 rows=19 width=14) (actual rows=0.00 loops=1)
+         Buffers: shared hit=2
+         ->  Index Scan using lab06_flight_delay_idx on flights f  (cost=0.29..8.30 rows=1 width=4) (actual rows=0.00 loops=1)
+               Index Cond: ((actual_departure - scheduled_departure) > '05:00:00'::interval)
+               Index Searches: 1
+               Buffers: shared hit=2
+         ->  Index Only Scan using lab06_business_segments_idx on segments s  (cost=0.42..68.24 rows=26 width=18) (never executed)
+               Index Cond: (flight_id = f.flight_id)
+               Heap Fetches: 0
+               Index Searches: 0
+   ->  Index Scan using tickets_pkey on tickets t  (cost=0.43..0.85 rows=1 width=52) (never executed)
+         Index Cond: (ticket_no = s.ticket_no)
+         Index Searches: 0
+ Settings: search_path = 'bookings, "$user", public'
+ Planning:
+   Buffers: shared hit=545 read=5
+ Planning Time: 0.909 ms
+ Execution Time: 0.040 ms
+(20 rows)
+
+Time: 1.491 ms
+Результат запроса с сохранением повторений исходной выборки
+ ticket_no | book_ref | passenger_id | passenger_name | outbound 
+-----------+----------+--------------+----------------+----------
+(0 rows)
+
+Time: 0.373 ms

@@ -1,0 +1,29 @@
+Pager usage is off.
+BEGIN
+DO
+SELECT 1
+ successful_transfer_result 
+----------------------------
+                          0
+(1 row)
+
+ account_id | val 
+------------+-----
+          1 |  70
+          2 | 130
+(2 rows)
+
+ operation_id | account_from | account_to | amount |        operation_time         
+--------------+--------------+------------+--------+-------------------------------
+            1 |            1 |          2 |     30 | 2026-11-19 17:19:00.433413+03
+(1 row)
+
+psql:/home/stepan/code/MAI_DatabaseDesing/lab_02/03_check.sql:98: NOTICE:  Все проверки пройдены
+DO
+ROLLBACK
+ account_id | val 
+------------+-----
+          1 | 100
+          2 | 100
+(2 rows)
+

@@ -1,0 +1,23 @@
+Pager usage is off.
+BEGIN
+INSERT 0 2
+INSERT 0 3
+INSERT 0 2
+DO
+SAVEPOINT
+UPDATE 1
+DO
+DELETE 1
+DO
+UPDATE 1
+DO
+ROLLBACK
+psql:/home/stepan/code/MAI_DatabaseDesing/lab_03/02_check.sql:107: NOTICE:  Все проверки пройдены
+DO
+ book_ref | total_amount 
+----------+--------------
+ F0A003   |       300.00
+ F0A004   |         0.00
+(2 rows)
+
+ROLLBACK

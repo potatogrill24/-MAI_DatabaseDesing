@@ -1,0 +1,8 @@
+Pager usage is off.
+psql:/home/stepan/code/MAI_DatabaseDesing/lab_06/03_check.sql:41: NOTICE:  Проверка пройдена: различий 0, повторения совпадают
+DO
+ matching_segments | unique_tickets 
+-------------------+----------------
+                 0 |              0
+(1 row)
+
