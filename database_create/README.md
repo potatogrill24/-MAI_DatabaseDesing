@@ -1,48 +1,78 @@
 # Создание баз данных
 
-Пока подготовлены только файлы создания двух баз:
+- `restore_demo.sh` восстанавливает `demo` из дампа «Авиаперевозки».
+- `create_simple.sql` создаёт `simple` со схемой `details` и данными из задания.
 
-- `restore_demo.sh` — восстанавливает `demo` из `database.sql.gz`, расположенного рядом со скриптом.
-- `create_simple.sql` — создает `simple` со схемой `details` и данными из задания.
+Запускайте команды из корня репозитория. Для восстановления `demo` нужен PostgreSQL 17 или новее с расширениями `btree_gist`, `cube`, `earthdistance` и локалью `en_US.UTF-8`.
 
-Оба скрипта при запуске удаляют существующую одноименную базу и создают ее заново. Подготовка файлов сама по себе базы не изменяет.
+Положите [архив дампа](https://edu.postgrespro.ru/demo-20250901-3m.sql.gz) в `database_create/` под именем `database.sql.gz` или `demo-20250901-3m.sql.gz`. Если там есть оба файла, скрипт использует `database.sql.gz`.
+
+**При запуске обе базы пересоздаются.** Перед этим закройте активные подключения к `demo` и `simple`.
 
 ## Запуск
 
-Команды выполняются из директории `MAI_DatabaseDesing`:
+### Linux
+
+Команды рассчитаны на запущенный PostgreSQL и локальное подключение от системного пользователя `postgres` через `sudo`.
 
 ```bash
 bash database_create/restore_demo.sh
 sudo -u postgres psql -X -d postgres -v ON_ERROR_STOP=1 -f database_create/create_simple.sql
 ```
 
-Для восстановления нужны PostgreSQL 17 или новее, доступные расширения `btree_gist`, `cube`, `earthdistance` и локаль `en_US.UTF-8`, указанная в дампе. PostgreSQL должен быть запущен. Скрипты используют локальное подключение от пользователя `postgres` через `sudo`; пароль `sudo`, если он запрошен, вводится в терминале.
+### macOS
 
-Перед пересозданием закройте другие подключения к `demo` и `simple`: PostgreSQL не удалит базу с активными подключениями. Принудительное завершение чужих соединений скрипты не выполняют.
+Установите и запустите PostgreSQL 17 через [Homebrew](https://formulae.brew.sh/formula/postgresql@17). Добавьте `psql` в `PATH` текущего терминала.
 
-`restore_demo.sh` проверяет целостность архива, распаковывает его потоком и передает SQL в `psql`. Единственная поправка к содержимому дампа — `DROP DATABASE demo` заменяется на `DROP DATABASE IF EXISTS demo`, чтобы первое восстановление работало и при отсутствии базы. Исходный архив не изменяется.
+```zsh
+brew install postgresql@17
+brew services start postgresql@17
+export PATH="$(brew --prefix postgresql@17)/bin:$PATH"
 
-В `create_simple.sql` создание и заполнение таблиц выполняются в одной транзакции. Данные сохранены по заданию, включая два одинаковых вхождения поставки `('s1', 'p1', 'j1', 200)`. Удалять пустые таблицы после пересоздания всей базы не требуется, поэтому команды `DROP TABLE` из исходного примера опущены.
+psql -X -d postgres -c 'SELECT current_user, version();'
+```
+
+В том же терминале восстановите `demo` и создайте `simple` от своей учётной записи macOS.
+
+```zsh
+bash database_create/restore_demo.sh
+psql -X -d postgres -v ON_ERROR_STOP=1 -f database_create/create_simple.sql
+```
+
+`restore_demo.sh` проверяет целостность архива и передаёт SQL в `psql` потоком. По пути скрипт заменяет `DROP DATABASE demo` на `DROP DATABASE IF EXISTS demo`, чтобы поддержать первый запуск.
+
+`create_simple.sql` создаёт и заполняет таблицы в одной транзакции. Данные из задания включают две одинаковые строки поставки `('s1', 'p1', 'j1', 200)`.
 
 ## Проверка
 
-После каждого запуска код завершения должен быть `0`:
+Сразу после каждой команды запуска `echo $?` должен вывести `0`.
 
-```bash
-echo $?
-```
-
-Проверка восстановления `demo`:
+### Linux
 
 ```bash
 sudo -u postgres psql -X -d demo -c 'SELECT bookings.version();'
 sudo -u postgres psql -X -d demo -c '\dt bookings.*'
+sudo -u postgres psql -X -d simple -c '
+  SELECT
+    (SELECT count(*) FROM details.s) AS suppliers,
+    (SELECT count(*) FROM details.p) AS parts,
+    (SELECT count(*) FROM details.j) AS projects,
+    (SELECT count(*) FROM details.spj) AS supplies;
+'
 ```
 
-Проверка числа записей в `simple`:
+### macOS
 
-```bash
-sudo -u postgres psql -X -d simple -c 'SELECT (SELECT count(*) FROM details.s) AS suppliers, (SELECT count(*) FROM details.p) AS parts, (SELECT count(*) FROM details.j) AS projects, (SELECT count(*) FROM details.spj) AS supplies;'
+```zsh
+psql -X -d demo -c 'SELECT bookings.version();'
+psql -X -d demo -c '\dt bookings.*'
+psql -X -d simple -c '
+  SELECT
+    (SELECT count(*) FROM details.s) AS suppliers,
+    (SELECT count(*) FROM details.p) AS parts,
+    (SELECT count(*) FROM details.j) AS projects,
+    (SELECT count(*) FROM details.spj) AS supplies;
+'
 ```
 
-Ожидается: **5 поставщиков, 6 деталей, 7 проектов, 25 строк поставок**.
+Для `demo` команды выводят версию набора данных и список таблиц схемы `bookings`. Для `simple` ожидаются **5 поставщиков, 6 деталей, 7 проектов и 25 строк поставок**.
